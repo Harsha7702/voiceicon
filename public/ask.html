@@ -23,6 +23,7 @@
       position: fixed;
       bottom: 100px;
       right: 20px;
+      width: auto;
       max-width: 250px;
       padding: 10px;
       font-family: Arial, sans-serif;
@@ -42,59 +43,63 @@
     const chatBox = document.getElementById("chatBox");
     const scriptId = window.location.pathname.split("/").pop();
 
-    askButton.addEventListener("click", startConversation);
-
-    async function startConversation() {
-      speak("Greetings! How can I assist you today?");
+    async function handleSpeechProcess() {
       chatBox.style.display = "block";
-      chatBox.innerHTML = '<p class="message">Greetings! How can I assist you today?</p>';
-      await wait(3000);
-      chatBox.innerHTML = '';
-      chatBox.style.display = "none";
-      await handleUserQuery();
-    }
-
-    async function handleUserQuery() {
-      const userInput = await getSpeechInput();
-      if (!userInput) return;
-      chatBox.style.display = "block";
-      chatBox.innerHTML = <p class="message">${userInput}</p>;
-      await wait(2000);
-      chatBox.innerHTML = '';
-      chatBox.style.display = "none";
-
-      const response = await fetch(/process-speech/${scriptId}, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: userInput }),
-      });
-
-      const data = await response.json();
-      speak(data.answer);
-      chatBox.style.display = "block";
-      chatBox.innerHTML = <p class="message">${data.answer}</p>;
+      chatBox.innerHTML = '<p class="message">Hi, how can I help you?</p>';
+      speak("Hi, how can I help you?");
       await wait(3000);
       chatBox.innerHTML = '';
       chatBox.style.display = "none";
       
-      speak("Is there anything else?");
-      chatBox.style.display = "block";
-      chatBox.innerHTML = '<p class="message">Is there anything else?</p>';
-      await wait(3000);
-      chatBox.innerHTML = '';
-      chatBox.style.display = "none";
-      
-      const continueResponse = await getSpeechInput();
-      if (continueResponse.toLowerCase() === "yes") {
-        speak("Please ask your next question.");
-        await handleUserQuery();
-      } else {
-        speak("Thank you!");
+      while (true) {
+        const userInput = await getSpeechInput();
         chatBox.style.display = "block";
-        chatBox.innerHTML = '<p class="message">Thank you!</p>';
+        chatBox.innerHTML = `<p class="message">${userInput}</p>`;
         await wait(2000);
         chatBox.innerHTML = '';
         chatBox.style.display = "none";
+
+        const response = await fetch(`/process-speech/${scriptId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: userInput }),
+        });
+
+        const data = await response.json();
+        speak(data.answer);
+        chatBox.style.display = "block";
+        chatBox.innerHTML = `<p class="message">${data.answer}</p>`;
+        await wait(3000);
+        chatBox.innerHTML = '';
+        chatBox.style.display = "none";
+
+        while (true) {
+          speak("Is there anything else?");
+          chatBox.style.display = "block";
+          chatBox.innerHTML = '<p class="message">Is there anything else?</p>';
+          await wait(3000);
+          chatBox.innerHTML = '';
+          chatBox.style.display = "none";
+
+          const continueResponse = await getSpeechInput();
+          if (continueResponse.toLowerCase() === "yes") {
+            speak("How can I help you?");
+            chatBox.style.display = "block";
+            chatBox.innerHTML = '<p class="message">How can I help you?</p>';
+            await wait(3000);
+            chatBox.innerHTML = '';
+            chatBox.style.display = "none";
+            break; // Go back to asking for a question
+          } else {
+            speak("Thank you");
+            chatBox.style.display = "block";
+            chatBox.innerHTML = '<p class="message">Thank you</p>';
+            await wait(2000);
+            chatBox.innerHTML = '';
+            chatBox.style.display = "none";
+            return; // Exit the function
+          }
+        }
       }
     }
 
@@ -116,6 +121,8 @@
         recognition.start();
       });
     }
+
+    askButton.addEventListener("click", handleSpeechProcess);
   </script>
 </body>
 </html>
