@@ -73,32 +73,29 @@
         chatBox.innerHTML = '';
         chatBox.style.display = "none";
 
-        while (true) {
-          speak("Is there anything else?");
+        speak("Is there anything else?");
+        chatBox.style.display = "block";
+        chatBox.innerHTML = '<p class="message">Is there anything else?</p>';
+        await wait(3000);
+        chatBox.innerHTML = '';
+        chatBox.style.display = "none";
+
+        const continueResponse = await getSpeechInput();
+        if (continueResponse.toLowerCase() === "yes") {
+          speak("How can I help you?");
           chatBox.style.display = "block";
-          chatBox.innerHTML = '<p class="message">Is there anything else?</p>';
+          chatBox.innerHTML = '<p class="message">How can I help you?</p>';
           await wait(3000);
           chatBox.innerHTML = '';
           chatBox.style.display = "none";
-
-          const continueResponse = await getSpeechInput();
-          if (continueResponse.toLowerCase() === "yes") {
-            speak("How can I help you?");
-            chatBox.style.display = "block";
-            chatBox.innerHTML = '<p class="message">How can I help you?</p>';
-            await wait(3000);
-            chatBox.innerHTML = '';
-            chatBox.style.display = "none";
-            break; // Go back to asking for a question
-          } else {
-            speak("Thank you");
-            chatBox.style.display = "block";
-            chatBox.innerHTML = '<p class="message">Thank you</p>';
-            await wait(2000);
-            chatBox.innerHTML = '';
-            chatBox.style.display = "none";
-            return; // Exit the function
-          }
+        } else {
+          speak("Thank you");
+          chatBox.style.display = "block";
+          chatBox.innerHTML = '<p class="message">Thank you</p>';
+          await wait(2000);
+          chatBox.innerHTML = '';
+          chatBox.style.display = "none";
+          return; // Exit the function
         }
       }
     }
