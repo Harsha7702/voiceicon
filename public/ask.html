@@ -92,7 +92,7 @@
         chatBox.innerHTML = `<p class="message">${question}</p>`;
 
         // Wait for 2 seconds before hiding the question
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        await new Promise(resolve => setTimeout(resolve, 2000));
         chatBox.innerHTML = '';
         chatBox.style.display = "none";
 
@@ -112,7 +112,7 @@
           chatBox.innerHTML = `<p class="message">${data.answer}</p>`;
 
           // Wait for 3 seconds before hiding the response
-          await new Promise(resolve => setTimeout(resolve, 5000));
+          await new Promise(resolve => setTimeout(resolve, 3000));
           chatBox.innerHTML = '';
           chatBox.style.display = "none";
 
