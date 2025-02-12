@@ -34,7 +34,7 @@
 </head>
 <body>
   <button id="askButton">
-    <img src="https://gifsgratuits.fr/robot/robot7-(9).gif" alt="Ask Me Anything" width="60" height="60">
+    <img src="https://gifsgratuits.fr/robot/robot7-(9).gif" alt="Ask Me Anything" width="70" height="70">
   </button>
   <div id="chatBox"></div>
 
@@ -47,17 +47,16 @@
       chatBox.style.display = "block";
       chatBox.innerHTML = '<p class="message">Hi, how can I help you?</p>';
       speak("Hi, how can I help you?");
-      await wait(3000);
+      await wait(2000);
       chatBox.innerHTML = '';
       chatBox.style.display = "none";
       
       while (true) {
         const userInput = await getSpeechInput();
+        if (!userInput) continue;
+
         chatBox.style.display = "block";
         chatBox.innerHTML = `<p class="message">${userInput}</p>`;
-        await wait(2000);
-        chatBox.innerHTML = '';
-        chatBox.style.display = "none";
 
         const response = await fetch(`/process-speech/${scriptId}`, {
           method: "POST",
@@ -67,42 +66,43 @@
 
         const data = await response.json();
         speak(data.answer);
-        chatBox.style.display = "block";
         chatBox.innerHTML = `<p class="message">${data.answer}</p>`;
-        await wait(3000);
+        await wait(data.answer.length * 100);
         chatBox.innerHTML = '';
         chatBox.style.display = "none";
+        await wait(3000);
 
         speak("Is there anything else?");
         chatBox.style.display = "block";
         chatBox.innerHTML = '<p class="message">Is there anything else?</p>';
-        await wait(3000);
-        chatBox.innerHTML = '';
-        chatBox.style.display = "none";
+        await wait(1000);
 
         const continueResponse = await getSpeechInput();
-        if (continueResponse.toLowerCase() === "yes") {
+        if (continueResponse.toLowerCase().includes("yes")) {
           speak("How can I help you?");
           chatBox.style.display = "block";
           chatBox.innerHTML = '<p class="message">How can I help you?</p>';
-          await wait(3000);
+          await wait(2000);
           chatBox.innerHTML = '';
           chatBox.style.display = "none";
         } else {
           speak("Thank you");
           chatBox.style.display = "block";
           chatBox.innerHTML = '<p class="message">Thank you</p>';
-          await wait(2000);
+          await wait(1500);
           chatBox.innerHTML = '';
           chatBox.style.display = "none";
-          return; // Exit the function
+          return;
         }
       }
     }
 
     function speak(text) {
-      const utterance = new SpeechSynthesisUtterance(text);
-      window.speechSynthesis.speak(utterance);
+      return new Promise(resolve => {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.onend = resolve;
+        window.speechSynthesis.speak(utterance);
+      });
     }
 
     function wait(ms) {
