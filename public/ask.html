@@ -111,8 +111,8 @@
           chatBox.style.display = "block";
           chatBox.innerHTML = `<p class="message">${data.answer}</p>`;
 
-          // Wait for 3 seconds before hiding the response
-          await new Promise(resolve => setTimeout(resolve, 5000));
+          // Wait for 7 seconds before hiding the response
+          await new Promise(resolve => setTimeout(resolve, 7000));
           chatBox.innerHTML = '';
           chatBox.style.display = "none";
 
