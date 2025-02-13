@@ -47,7 +47,7 @@
       chatBox.style.display = "block";
       chatBox.innerHTML = '<p class="message">Hi, how can I help you?</p>';
       speak("Hi, how can I help you?");
-      await wait(3000);
+      await wait(2000);
       chatBox.innerHTML = '';
       chatBox.style.display = "none";
       
@@ -61,8 +61,7 @@
         const response = await fetch(/process-speech/${scriptId}, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: userInput },),
-          
+          body: JSON.stringify({ question: userInput }),
         });
 
         const data = await response.json();
@@ -82,14 +81,14 @@
           speak("How can I help you?");
           chatBox.style.display = "block";
           chatBox.innerHTML = '<p class="message">How can I help you?</p>';
-          await wait(1000);
+          await wait(2000);
           chatBox.innerHTML = '';
           chatBox.style.display = "none";
         } else {
           speak("Thank you");
           chatBox.style.display = "block";
           chatBox.innerHTML = '<p class="message">Thank you</p>';
-          await wait(500);
+          await wait(1500);
           chatBox.innerHTML = '';
           chatBox.style.display = "none";
           return;
