@@ -75,6 +75,8 @@
         chatBox.style.display = "block";
         chatBox.innerHTML = '<p class="message">Is there anything else?</p>';
         await wait(1000);
+        chatBox.innerHTML = '';
+        chatBox.style.display = "none"
 
         const continueResponse = await getSpeechInput();
         if (continueResponse.toLowerCase().includes("yes")) {
