@@ -37,144 +37,91 @@
     <img src="https://gifsgratuits.fr/robot/robot7-(9).gif" alt="Ask Me Anything" width="70" height="70">
   </button>
   <div id="chatBox"></div>
-<script>
 
+  <script>
     const askButton = document.getElementById("askButton");
-
     const chatBox = document.getElementById("chatBox");
-
     const scriptId = window.location.pathname.split("/").pop();
+async function handleSpeechProcess() {
+  chatBox.style.display = "block";
+  chatBox.innerHTML = '<p class="message">Hi, how can I help you?</p>';
+  await speak("Hi, how can I help you?");
+  
+  while (true) {
+    const userInput = await getSpeechInput();
+    if (!userInput) continue;
 
+    chatBox.innerHTML = `<p class="message">${userInput}</p>`;
+    
+    try {
+      // Immediately update UI before waiting for response
+      chatBox.innerHTML = '<p class="message">Thinking...</p>';
+      
+      const response = await fetch(`/process-speech/${scriptId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: userInput }),
+      });
 
+      const data = await response.json();
+      
+      // Remove "Thinking..." text quickly
+      chatBox.innerHTML = `<p class="message">${data.answer}</p>`;
+      
+      // Speak without delay
+      await speak(data.answer);
 
-    async function handleSpeechProcess() {
+      setTimeout(() => chatBox.style.display = "none", 1000); // Reduce delay
 
-      chatBox.style.display = "block";
-
-      updateChat("Hi, how can I help you?");
-
-      await speak("Hi, how can I help you?");
-
-
-
-      while (true) {
-
-        const userInput = await getSpeechInput();
-
-        if (!userInput) continue;
-
-
-
-        updateChat(userInput);
-
-        
-
-        const response = await fetch(/process-speech/${scriptId}, {
-
-          method: "POST",
-
-          headers: { "Content-Type": "application/json" },
-
-          body: JSON.stringify({ question: userInput }),
-
-        });
-
-
-
-        const data = await response.json();
-
-        updateChat(data.answer);
-
-        await speak(data.answer);
-
-        
-
-        updateChat("Is there anything else?");
-
-        await speak("Is there anything else?");
-
-
-
-        const continueResponse = await getSpeechInput();
-
-        if (continueResponse.toLowerCase().includes("yes")) {
-
-          updateChat("How can I help you?");
-
-          await speak("How can I help you?");
-
-        } else {
-
-          updateChat("Thank you");
-
-          await speak("Thank you");
-
-          chatBox.style.display = "none";
-
-          return;
-
-        }
-
-      }
-
+    } catch (error) {
+      chatBox.innerHTML = '<p class="message">Error processing request.</p>';
+      await speak("Sorry, something went wrong.");
+      setTimeout(() => chatBox.style.display = "none", 1000);
+      return;
     }
+
+    await speak("Is there anything else?");
+    chatBox.innerHTML = '<p class="message">Is there anything else?</p>';
+
+    const continueResponse = await getSpeechInput();
+    if (continueResponse.toLowerCase().includes("yes")) {
+      await speak("How can I help you?");
+      chatBox.innerHTML = '<p class="message">How can I help you?</p>';
+      setTimeout(() => chatBox.style.display = "none", 1000);
+    } else {
+      await speak("Thank you");
+      chatBox.innerHTML = '<p class="message">Thank you</p>';
+      setTimeout(() => chatBox.style.display = "none", 1000);
+      return;
+    }
+  }
+}
 
 
 
     function speak(text) {
-
       return new Promise(resolve => {
-
         const utterance = new SpeechSynthesisUtterance(text);
-
-        utterance.onend = () => resolve();
-
+        utterance.onend = resolve;
         window.speechSynthesis.speak(utterance);
-
       });
-
     }
 
-
+    function wait(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
     function getSpeechInput() {
-
       return new Promise(resolve => {
-
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-
         recognition.lang = "en-US";
-
-        recognition.interimResults = false;
-
-        recognition.maxAlternatives = 3;
-
-        
-
         recognition.onresult = event => resolve(event.results[0][0].transcript);
-
         recognition.onerror = () => resolve("");
-
         recognition.start();
-
       });
-
     }
-
-
-
-    function updateChat(message) {
-
-      chatBox.style.display = "block";
-
-      chatBox.innerHTML = <p class="message">${message}</p>;
-
-    }
-
-
 
     askButton.addEventListener("click", handleSpeechProcess);
-
-</script>
+  </script>
 </body>
 </html>
