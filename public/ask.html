@@ -46,53 +46,73 @@
     async function handleSpeechProcess() {
       chatBox.style.display = "block";
       chatBox.innerHTML = '<p class="message">Hi, how can I help you?</p>';
-      await speak("Hi, how can I help you?");
+      speak("Hi, how can I help you?");
+      await wait(2000);
       chatBox.innerHTML = '';
       chatBox.style.display = "none";
-
+      
       while (true) {
         const userInput = await getSpeechInput();
         if (!userInput) continue;
 
         chatBox.style.display = "block";
-        chatBox.innerHTML = `<p class="message">${userInput}</p>`;
+        chatBox.innerHTML = <p class="message">${userInput}</p>;
 
-        const response = await fetch(`/process-speech/${scriptId}`, {
+        const response = await fetch(/process-speech/${scriptId}, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ question: userInput }),
         });
 
         const data = await response.json();
-        chatBox.innerHTML = `<p class="message">${data.answer}</p>`;
-        await speak(data.answer);
+        speak(data.answer);
+        chatBox.innerHTML = <p class="message">${data.answer}</p>;
+        await wait(data.answer.length * 100);
         chatBox.innerHTML = '';
         chatBox.style.display = "none";
 
+        speak("Is there anything else?");
         chatBox.style.display = "block";
         chatBox.innerHTML = '<p class="message">Is there anything else?</p>';
-        await speak("Is there anything else?");
-        chatBox.innerHTML = ''; // Remove "Is there anything else?" immediately
-        chatBox.style.display = "none";
+        // await wait(1000);
 
+      //   const continueResponse = await getSpeechInput();
+      //   if (continueResponse.toLowerCase().includes("yes")) {
+      //     speak("How can I help you?");
+      //     chatBox.style.display = "block";
+      //     chatBox.innerHTML = '<p class="message">How can I help you?</p>';
+      //     // await wait(1000);
+      //     chatBox.innerHTML = '';
+      //     chatBox.style.display = "none";
+      //   } else {
+      //     speak("Thank you");
+      //     chatBox.style.display = "block";
+      //     chatBox.innerHTML = '<p class="message">Thank you</p>';
+      //     await wait(1500);
+      //     chatBox.innerHTML = '';
+      //     chatBox.style.display = "none";
+      //     return;
+      //   }
+      // }
         const continueResponse = await getSpeechInput();
         if (continueResponse.toLowerCase().includes("yes")) {
+          speak("How can I help you?"); // Speak immediately
           chatBox.style.display = "block";
           chatBox.innerHTML = '<p class="message">How can I help you?</p>';
-          await speak("How can I help you?");
-          chatBox.innerHTML = '';
-          chatBox.style.display = "none";
+          setTimeout(() => { 
+            chatBox.innerHTML = ''; 
+            chatBox.style.display = "none";
+          }, 1000); // Hide message after 1 second
         } else {
+          speak("Thank you"); // Speak immediately
           chatBox.style.display = "block";
-          chatBox.innerHTML = '<p class="message">Thank you</p>';
-          await speak("Thank you");
-          await wait(500);
-          chatBox.innerHTML = '';
-          chatBox.style.display = "none";
-          return;
+          chatBox.innerHTML = '<p class="message">Thank you</p>'
+            setTimeout(() => { 
+              chatBox.innerHTML = ''; 
+              chatBox.style.display = "none"; 
+            }, 1500); // Hide message after 1.5 seconds
         }
       }
-    }
 
     function speak(text) {
       return new Promise(resolve => {
@@ -113,7 +133,7 @@
         recognition.onresult = event => resolve(event.results[0][0].transcript);
         recognition.onerror = () => resolve("");
         recognition.start();
-      });
+      },1000);
     }
 
     askButton.addEventListener("click", handleSpeechProcess);
