@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,7 +71,6 @@
         await wait(data.answer.length * 100);
         chatBox.innerHTML = '';
         chatBox.style.display = "none";
-        await wait(3000);
 
         speak("Is there anything else?");
         chatBox.style.display = "block";
@@ -82,7 +82,7 @@
           speak("How can I help you?");
           chatBox.style.display = "block";
           chatBox.innerHTML = '<p class="message">How can I help you?</p>';
-          await wait(2000);
+          await wait(1000);
           chatBox.innerHTML = '';
           chatBox.style.display = "none";
         } else {
