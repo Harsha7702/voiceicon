@@ -47,7 +47,7 @@
       chatBox.style.display = "block";
       chatBox.innerHTML = '<p class="message">Hi, how can I help you?</p>';
       speak("Hi, how can I help you?");
-      await wait(2000);
+      await wait(3000);
       chatBox.innerHTML = '';
       chatBox.style.display = "none";
       
@@ -68,14 +68,14 @@
         const data = await response.json();
         speak(data.answer);
         chatBox.innerHTML = <p class="message">${data.answer}</p>;
-        await wait(data.answer.length * 50);
+        await wait(data.answer.length * 100);
         chatBox.innerHTML = '';
         chatBox.style.display = "none";
 
         speak("Is there anything else?");
         chatBox.style.display = "block";
         chatBox.innerHTML = '<p class="message">Is there anything else?</p>';
-        await wait(500);
+        await wait(1000);
 
         const continueResponse = await getSpeechInput();
         if (continueResponse.toLowerCase().includes("yes")) {
