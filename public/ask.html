@@ -116,7 +116,7 @@
         recognition.onresult = event => resolve(event.results[0][0].transcript);
         recognition.onerror = () => resolve("");
         recognition.start();
-      });
+      },1000);
     }
 
     askButton.addEventListener("click", handleSpeechProcess);
