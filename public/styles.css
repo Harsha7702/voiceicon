@@ -8,23 +8,33 @@ body {
   margin: 0;
   background-color: #f4f4f4;
 }
+body {
+  background-image: url('https://img6.thuthuatphanmem.vn/uploads/2022/03/16/background-cong-nghe-ai-40-dep-nhat_094203238.jpg');
+  background-size: cover; /* Adjusts the image to cover the entire screen */
+  background-repeat: no-repeat; /* Prevents the image from repeating */
+}
 
 button {
   padding: 15px 30px;
   font-size: 18px;
   border: none;
   border-radius: 5px;
-  background-color: #4caf50;
+  background-color:#1099e2;
   color: white;
   cursor: pointer;
+  
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #1276db;
 }
 
 form {
   margin-bottom: 20px;
+  color: #1099e2;
+  font-size: medium;
+  font-weight: bold; /* Makes text bold */
+  text-transform: capitalize; /* Capitalizes the first letter of each word */
 }
 
 input[type="file"] {
